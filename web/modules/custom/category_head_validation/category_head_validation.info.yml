@@ -1,0 +1,5 @@
+name: 'category_head_validation'
+type: module
+description: 'when an editor register , we can validate and and can give error'
+package: Custom
+core_version_requirement: ^10

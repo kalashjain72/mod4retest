@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for category_head_validation module.
+ */
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Calls a function to validate that the category is used only once.
+ */
+function category_head_validation_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'user_register_form') {
+    $form['#validate'][] = 'category_head_validation_form_validate';
+  }
+}
+
+/**
+ * Form validation callback for user registration form.
+ */
+function category_head_validation_form_validate(&$form, $form_state) {
+
+  $term = $form_state->getValue('field_category_head');
+
+  $term_id = $term[0]['target_id'];
+
+  $query = \Drupal::entityQuery('user')
+    ->accessCheck(FALSE)
+    ->condition('field_category_head.target_id', $term_id);
+  $result = $query->execute();
+
+  if (!empty($result)) {
+    $form_state->setErrorByName('field_category_head', 'The Category head is alredy assigned so please try different one.');
+  }
+
+}
