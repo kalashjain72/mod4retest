@@ -1,0 +1,32 @@
+uuid: 86fea3d1-b0a5-4dfd-8c11-138da708b65a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_description
+  module:
+    - multiple_registration
+    - text
+    - user
+third_party_settings:
+  multiple_registration:
+    user_additional_register_form_required:
+      authenticated: 0
+      _news_anchor: 0
+      editor: 0
+    user_additional_register_form:
+      _news_anchor: _news_anchor
+      editor: editor
+      authenticated: 0
+id: user.user.field_description
+field_name: field_description
+entity_type: user
+bundle: user
+label: Description
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text
