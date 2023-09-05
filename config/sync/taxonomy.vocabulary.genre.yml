@@ -1,0 +1,8 @@
+uuid: 970ff333-a678-4691-97ce-1db5177a4505
+langcode: en
+status: true
+dependencies: {  }
+name: Genre
+vid: genre
+description: 'Genre of the news  anchor '
+weight: 0

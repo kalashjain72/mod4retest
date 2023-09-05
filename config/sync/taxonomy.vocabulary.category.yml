@@ -1,0 +1,8 @@
+uuid: a2f02f00-6b9d-477c-a830-a4c559baeaca
+langcode: en
+status: true
+dependencies: {  }
+name: Category
+vid: category
+description: 'showes news belong to which catageory ,single valued and required '
+weight: 0

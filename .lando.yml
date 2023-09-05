@@ -1,0 +1,4 @@
+name: mod4retest
+recipe: drupal10
+config:
+  webroot: web

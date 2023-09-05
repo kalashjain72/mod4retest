@@ -1,0 +1,23 @@
+uuid: 782d8d71-bf62-45b7-a239-5030e1f6dcf0
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.news_page
+  module:
+    - field_permissions
+    - node
+id: editor
+label: Editor
+weight: 5
+is_admin: null
+permissions:
+  - 'create field_hash_tags'
+  - 'create news_page content'
+  - 'delete news_page revisions'
+  - 'delete own news_page content'
+  - 'edit field_hash_tags'
+  - 'edit own field_hash_tags'
+  - 'edit own news_page content'
+  - 'view field_hash_tags'
+  - 'view own field_hash_tags'

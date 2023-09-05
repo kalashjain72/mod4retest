@@ -1,0 +1,5 @@
+name: 'custom_cron'
+type: module
+description: 'this is the cron to delete old news'
+package: Custom
+core_version_requirement: ^10

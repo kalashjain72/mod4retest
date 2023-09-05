@@ -1,0 +1,8 @@
+uuid: ce475442-f3f4-41b9-96e4-68234571b1ff
+langcode: en
+status: true
+dependencies: {  }
+name: 'Hash Tags'
+vid: hash_tags
+description: 'tages of the news , can be add by editor only and multivalued'
+weight: 0
