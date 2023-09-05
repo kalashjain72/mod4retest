@@ -1,0 +1,68 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for node mail module.
+ */
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for node entities.
+ */
+function node_mail_node_presave(Drupal\node\NodeInterface $node) {
+  if ($node->getType() == 'news_page') {
+    $emailEditors = node_mail_get_editor_emails($node);
+
+    if (!empty($emailEditors)) {
+      $params = [
+        'subject' => 'News Page has been created/updated',
+        'message' => 'A news page has been updated/created. Check it out!',
+      ];
+      $mailManager = \Drupal::service('plugin.manager.mail');
+      $module = 'node_mail';
+      $key = 'news_page_notification';
+      $language = \Drupal::currentUser()->getPreferredLangcode();
+      $send = TRUE;
+
+      foreach ($emailEditors as $emailEditor) {
+        $mailManager->mail($module, $key, $emailEditor, $language, $params, NULL, $send);
+      }
+    }
+  }
+}
+
+/**
+ * Function to get email of editor from entity refrenxce.
+ */
+function node_mail_get_editor_emails(Drupal\node\NodeInterface $node) {
+  $emailEditors = [];
+
+  $newsAnchor = $node->get('field_created_by')->entity;
+
+  if ($newsAnchor && $newsAnchor instanceof Drupal\user\UserInterface) {
+    $editorInCharge = $newsAnchor->get('field_editor_in_charge')->getValue();
+
+    foreach ($editorInCharge as $editorInCharge) {
+      if (!empty($editorInCharge['target_id'])) {
+        $editorInChargeEntity = Drupal::entityTypeManager()->getStorage('user')->load($editorInCharge['target_id']);
+
+        if ($editorInChargeEntity instanceof Drupal\user\UserInterface) {
+          $emailEditors[] = $editorInChargeEntity->getEmail();
+        }
+      }
+    }
+  }
+
+  return $emailEditors;
+}
+
+/**
+ * Implements hook_mail() for node_mail.
+ */
+function node_mail_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'news_page_notification':
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['message'];
+      break;
+  }
+}

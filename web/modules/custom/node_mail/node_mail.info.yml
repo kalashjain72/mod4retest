@@ -1,0 +1,5 @@
+name: 'node mail'
+type: module
+description: 'to send mail when node is created'
+package: Custom
+core_version_requirement: ^10

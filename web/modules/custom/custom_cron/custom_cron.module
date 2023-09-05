@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for custom_cron module.
+ */
+
+/**
+ * This is a cron function.
+ */
+function custom_cron_cron() {
+
+  $sixMonthsAgo = strtotime('-6 months');
+  $formattedDate = date('Y-m-d', $sixMonthsAgo);
+  $timestamp = strtotime($formattedDate);
+
+  $query = \Drupal::entityQuery('node')
+    ->accessCheck(FALSE)
+    ->condition('type', 'news_page')
+    ->condition('created', $timestamp, '<');
+  $entity_ids = $query->execute();
+
+  if (!empty($entity_ids)) {
+
+    // Load and delete the node entities.
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $node = $storage->loadMultiple($entity_ids);
+    $storage->delete($node);
+    $titles = [];
+    // Stores the titles so can be used to mention in mail.
+    foreach ($node as $node) {
+      if ($node instanceof Drupal\node\NodeInterface) {
+        $titles[] = $node->label();
+      }
+    }
+
+    $query = \Drupal::entityQuery('user')
+      ->accessCheck(FALSE)
+      ->condition('roles', 'editor');
+    $entity_ids = $query->execute();
+
+    // Load all the editors to get mails.
+    $emails = [];
+    $storage = \Drupal::entityTypeManager()->getStorage('user');
+    $users = $storage->loadMultiple($entity_ids);
+
+    foreach ($users as $user) {
+      if ($user instanceof Drupal\user\UserInterface) {
+        $emails[] = $user->getEmail();
+      }
+    }
+    if (!empty($emails)) {
+      $mailManager = \Drupal::service('plugin.manager.mail');
+      $params = [
+        'subject' => 'News has been deleted',
+        'message' => 'The following news pages have been deleted on your website: ' . implode(', ', $titles) . ' Pls Check it out!',
+        'Reply-To' => 'kalash.jain@innoraft.com',
+
+      ];
+      $module = 'custom_crom';
+      $key = 'news_delete_notification';
+      $send = TRUE;
+      foreach ($emails as $sendemail) {
+        $mailManager->mail($module, $key, $sendemail, $params, NULL, $send);
+      }
+
+      /**
+       * Implements hook_mail() for custom_cron.
+       */
+      function custom_cron_mail($key, &$message, $params) {
+        switch ($key) {
+          case 'news_delete_notification':
+            $message['subject'] = $params['subject'];
+            $message['body'][] = $params['message'];
+            $message['Reply-To'][] = $params['Reply-To'];
+            break;
+        }
+      }
+
+    }
+  }
+}
